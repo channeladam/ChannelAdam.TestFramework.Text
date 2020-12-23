@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="EmbeddedResource.cs">
-//     Copyright (c) 2018 Adam Craven. All rights reserved.
+//     Copyright (c) 2018-2020 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,15 +54,13 @@ namespace ChannelAdam.TestFramework.Internal
         /// <returns>The embedded resource as a string.</returns>
         internal static string GetAsString(Assembly assembly, string resourceName)
         {
-            Stream stream = null;
+            Stream? stream = null;
             try
             {
                 stream = GetAsStream(assembly, resourceName);
-                using (var reader = new StreamReader(stream))
-                {
-                    stream = null;
-                    return reader.ReadToEnd();
-                }
+                using var reader = new StreamReader(stream);
+                stream = null;
+                return reader.ReadToEnd();
             }
             finally
             {

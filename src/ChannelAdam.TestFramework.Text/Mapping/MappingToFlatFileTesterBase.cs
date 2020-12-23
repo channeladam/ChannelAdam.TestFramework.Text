@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="MappingToFlatFileTesterBase.cs">
-//     Copyright (c) 2016-2018 Adam Craven. All rights reserved.
+//     Copyright (c) 2016-2020 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,16 +48,16 @@ namespace ChannelAdam.TestFramework.Mapping
             this.LogAssert = logAsserter;
 
             this.textTester = new TextTester(logAsserter);
-            this.textTester.ActualTextChangedEvent += this.TextTester_ActualTextChangedEvent;
-            this.textTester.ExpectedTextChangedEvent += this.TextTester_ExpectedTextChangedEvent;
-            this.textTester.TextDifferenceDetectedEvent += this.TextTester_TextDifferenceDetectedEvent;
+            this.textTester.ActualTextChangedEvent += this.TextTester_ActualTextChangedEvent!;
+            this.textTester.ExpectedTextChangedEvent += this.TextTester_ExpectedTextChangedEvent!;
+            this.textTester.TextDifferenceDetectedEvent += this.TextTester_TextDifferenceDetectedEvent!;
         }
 
         ~MappingToFlatFileTesterBase()
         {
-            this.textTester.ActualTextChangedEvent -= this.TextTester_ActualTextChangedEvent;
-            this.textTester.ExpectedTextChangedEvent -= this.TextTester_ExpectedTextChangedEvent;
-            this.textTester.TextDifferenceDetectedEvent -= this.TextTester_TextDifferenceDetectedEvent;
+            this.textTester.ActualTextChangedEvent -= this.TextTester_ActualTextChangedEvent!;
+            this.textTester.ExpectedTextChangedEvent -= this.TextTester_ExpectedTextChangedEvent!;
+            this.textTester.TextDifferenceDetectedEvent -= this.TextTester_TextDifferenceDetectedEvent!;
         }
 
         #endregion
@@ -71,7 +71,7 @@ namespace ChannelAdam.TestFramework.Mapping
         /// <remarks>
         /// This event or the TextDifferenceFilter property can be used for this purpose.
         /// </remarks>
-        public event EventHandler<TextDifferenceDetectedEventArgs> TextDifferenceDetectedEvent;
+        public event EventHandler<TextDifferenceDetectedEventArgs>? TextDifferenceDetectedEvent;
 
         #endregion
 
@@ -81,7 +81,10 @@ namespace ChannelAdam.TestFramework.Mapping
         {
             get { return this.textTester.ActualText; }
 
-            set { this.textTester.ArrangeActualText(value); }
+            set
+            {
+                this.textTester.ArrangeActualText(value);
+            }
         }
 
         public string ExpectedOutputFlatFileContents
@@ -97,7 +100,7 @@ namespace ChannelAdam.TestFramework.Mapping
         /// <remarks>
         /// This property or TextDifferenceDetectedEvent can be used for this purpose.
         /// </remarks>
-        public Action<DiffPaneModel> TextDifferenceFilter { get; set; }
+        public Action<DiffPaneModel>? TextDifferenceFilter { get; set; }
 
         protected ILogAsserter LogAssert { get; }
 

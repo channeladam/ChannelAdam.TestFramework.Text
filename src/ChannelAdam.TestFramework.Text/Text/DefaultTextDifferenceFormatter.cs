@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="DefaultTextDifferenceFormatter.cs">
-//     Copyright (c) 2016-2018 Adam Craven. All rights reserved.
+//     Copyright (c) 2016-2020 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-----------------------------------------------------------------------
-
+using System;
 namespace ChannelAdam.TestFramework.Text
 {
     using System.Text;
@@ -26,9 +26,14 @@ namespace ChannelAdam.TestFramework.Text
     {
         public string FormatDifferences(DiffPaneModel differences)
         {
+            if (differences == null)
+            {
+                throw new ArgumentNullException(nameof(differences));
+            }
+
             var sb = new StringBuilder();
 
-            foreach (var line in differences?.Lines)
+            foreach (var line in differences.Lines)
             {
                 switch (line.Type)
                 {

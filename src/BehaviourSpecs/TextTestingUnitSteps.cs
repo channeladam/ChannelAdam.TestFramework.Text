@@ -1,13 +1,17 @@
 ﻿namespace BehaviourSpecs
 {
     using TechTalk.SpecFlow;
-    using ChannelAdam.TestFramework.MSTestV2.Abstractions;
+    using ChannelAdam.TestFramework.NUnit.Abstractions;
     using ChannelAdam.TestFramework.Text;
+    using ChannelAdam.TestFramework.Abstractions;
+    using Moq;
 
     [Binding]
     [Scope(Feature = "TextTesting")]
     public class TextTestingUnitSteps : MoqTestFixture
     {
+        private const string NotEqualExceptionMessage = "Not equal (from Mocked method)";
+
         #region Fields
 
         private TextTester textTester;
@@ -20,14 +24,14 @@
         [BeforeScenario]
         public void BeforeScenario()
         {
-            this.textTester = new TextTester(base.LogAssert);
+            this.textTester = new TextTester(base.Logger, base.LogAssert);
         }
 
         #endregion
 
         #region Given
 
-        [Given(@"two text samples with the same words")]
+        [Given("two text samples with the same words")]
         public void GivenTwoTextSamplesWithTheSameWords()
         {
             this.textTester.ArrangeExpectedText(
@@ -40,7 +44,7 @@ attached to its horn.");
             this.textTester.ArrangeActualText(this.textTester.ExpectedText);
         }
 
-        [Given(@"two text samples with the different words")]
+        [Given("two text samples with the different words")]
         public void GivenTwoTextSamplesWithTheDifferentWords()
         {
             this.textTester.ArrangeExpectedText(
@@ -58,13 +62,24 @@ with a dry bottle of whiskey
 attached to its horn.");
         }
 
-        [Given(@"a delegate method exists to filter out the changes")]
+        [Given("a text tester with a mock LogAsserter that upon an assertion will throw an exception when the text is not equal")]
+        public void GivenATextTesterWithAMockLogAsserterThatUponAnAssertionWillThrowAnExceptionWhenTheTextIsNotEqual()
+        {
+            var mockLogAsserter = MyMockRepository.Create<ILogAsserter>();
+            mockLogAsserter
+                .Setup(m => m.IsTrue(It.IsAny<string>(), It.Is<bool>(x => !x)))
+                .Throws(new System.Exception(NotEqualExceptionMessage));
+
+            this.textTester = new TextTester(this.Logger, mockLogAsserter.Object);
+        }
+
+        [Given("a delegate method exists to filter out the changes")]
         public void GivenADelegateMethodExistsToFilterOutTheChanges()
         {
             this.textTester.TextDifferenceFilter = OverrideDifferences;
         }
 
-        [Given(@"an event handler exists to filter out the changes")]
+        [Given("an event handler exists to filter out the changes")]
         public void GivenAnEventHandlerExistsToFilterOutTheChanges()
         {
             this.textTester.TextDifferenceDetectedEvent += TextTester_TextDifferenceDetectedEvent;
@@ -74,7 +89,7 @@ attached to its horn.");
 
         #region When
 
-        [When(@"the two text samples are compared")]
+        [When("the two text samples are compared")]
         public void WhenTheTwoTextSamplesAreCompared()
         {
             Logger.Log("Comparing...");
@@ -85,19 +100,20 @@ attached to its horn.");
 
         #region Then
 
-        [Then(@"the two text samples are treated as the same")]
+        [Then("the two text samples are treated as the same")]
         public void ThenTheTwoTextSamplesAreTreatedAsTheSame()
         {
             this.textTester.AssertActualTextEqualsExpectedText();
         }
 
-        [Then(@"the two text samples are treated as different")]
+        [Then("the two text samples are treated as different")]
         public void ThenTheTwoTextSamplesAreTreatedAsDifferent()
         {
             LogAssert.IsTrue("Text samples are different", !this.isEqual);
 
-            this.ExpectedException.MessageShouldContainText = "The text is as expected";
+            this.ExpectedException.MessageShouldContainText = NotEqualExceptionMessage;
             Try(() => this.textTester.AssertActualTextEqualsExpectedText());
+            MyMockRepository.VerifyAll();
 
             AssertExpectedException();
         }

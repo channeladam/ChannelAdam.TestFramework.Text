@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="TextTester.cs">
-//     Copyright (c) 2016-2018 Adam Craven. All rights reserved.
+//     Copyright (c) 2016-2020 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,7 @@ namespace ChannelAdam.TestFramework.Text
 
         private string actualText;
         private string expectedText;
-        private DiffPaneModel differences;
+        private DiffPaneModel? differences;
 
         #endregion
 
@@ -59,9 +59,12 @@ namespace ChannelAdam.TestFramework.Text
 
         public TextTester(ISimpleLogger logger, ILogAsserter logAsserter, ITextDifferenceFormatter differenceFormatter)
         {
-            this.logger = logger;
-            this.logAssert = logAsserter;
-            this.differenceFormatter = differenceFormatter;
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.logAssert = logAsserter ?? throw new ArgumentNullException(nameof(logAsserter));
+            this.differenceFormatter = differenceFormatter ?? throw new ArgumentNullException(nameof(differenceFormatter));
+
+            this.actualText = string.Empty;
+            this.expectedText = string.Empty;
         }
 
         #endregion
@@ -71,12 +74,12 @@ namespace ChannelAdam.TestFramework.Text
         /// <summary>
         /// Occurs when the actual text property is changed.
         /// </summary>
-        public event EventHandler<TextChangedEventArgs> ActualTextChangedEvent;
+        public event EventHandler<TextChangedEventArgs>? ActualTextChangedEvent;
 
         /// <summary>
         /// Occurs when expected text property is changed.
         /// </summary>
-        public event EventHandler<TextChangedEventArgs> ExpectedTextChangedEvent;
+        public event EventHandler<TextChangedEventArgs>? ExpectedTextChangedEvent;
 
         /// <summary>
         /// Occurs when a text difference is detected, allowing a listener to filter the differences and
@@ -85,7 +88,7 @@ namespace ChannelAdam.TestFramework.Text
         /// <remarks>
         /// This event or the TextDifferenceFilter property can be used for this purpose.
         /// </remarks>
-        public event EventHandler<TextDifferenceDetectedEventArgs> TextDifferenceDetectedEvent;
+        public event EventHandler<TextDifferenceDetectedEventArgs>? TextDifferenceDetectedEvent;
 
         #endregion
 
@@ -119,7 +122,7 @@ namespace ChannelAdam.TestFramework.Text
             }
         }
 
-        public DiffPaneModel Differences
+        public DiffPaneModel? Differences
         {
             get { return this.differences; }
         }
@@ -132,7 +135,7 @@ namespace ChannelAdam.TestFramework.Text
         /// <remarks>
         /// This property or TextDifferenceDetectedEvent can be used for this purpose.
         /// </remarks>
-        public Action<DiffPaneModel> TextDifferenceFilter { get; set; }
+        public Action<DiffPaneModel>? TextDifferenceFilter { get; set; }
 
         #endregion
 
@@ -196,7 +199,8 @@ namespace ChannelAdam.TestFramework.Text
             var isEqual = this.IsEqual(this.ExpectedText, this.ActualText);
             if (!isEqual)
             {
-                var report = this.differenceFormatter.FormatDifferences(this.Differences);
+                // IsEqual sets this.Differences - so it is never null
+                var report = this.differenceFormatter.FormatDifferences(this.Differences!);
                 this.logger.Log("The differences are: " + Environment.NewLine + report);
             }
 

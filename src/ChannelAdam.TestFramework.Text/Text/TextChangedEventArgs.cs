@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="TextChangedEventArgs.cs">
-//     Copyright (c) 2016 Adam Craven. All rights reserved.
+//     Copyright (c) 2016-2020 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,6 @@ namespace ChannelAdam.TestFramework.Text
             this.Text = text;
         }
 
-        public string Text { get; private set; }
+        public string Text { get; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="MappingFromFlatFileToFlatFileTester.cs">
-//     Copyright (c) 2016-2018 Adam Craven. All rights reserved.
+//     Copyright (c) 2016-2020 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ namespace ChannelAdam.TestFramework.Mapping
 
         #region Properties
 
-        public string InputFlatFileContents { get; private set; }
+        public string InputFlatFileContents { get; private set; } = string.Empty;
 
         #endregion
 

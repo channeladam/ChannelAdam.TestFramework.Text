@@ -6,7 +6,8 @@ When the two text samples are compared
 Then the two text samples are treated as the same
 
 Scenario: Should error when two text samples have different words
-Given two text samples with the different words
+Given a text tester with a mock LogAsserter that upon an assertion will throw an exception when the text is not equal
+And two text samples with the different words
 When the two text samples are compared
 Then the two text samples are treated as different
 
